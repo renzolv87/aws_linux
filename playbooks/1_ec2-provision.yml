@@ -12,8 +12,8 @@
         key_name: ec2key
         image: ami-09d95fab7fff3776c #Amazon Linux 2 AMI 
         assign_public_ip: yes
-        vpc_subnet_id: subnet-06ac40190f5c60f9d #Subnet dentro de VPC que ya existe
-        group: launch-wizard-1  #Security Group que ya existe 
+        vpc_subnet_id: subnet-07d07affbab0da778 #Subnet dentro de VPC que ya existe
+        group: test #Security Group que ya existe 
         wait: true
         exact_count: 1
         count_tag:
@@ -30,7 +30,7 @@
         groupname: demogroup #el nombre de grupo que pondremos en el inventario
         #anadimos variables
         ansible_ssh_common_args: "-o StrictHostKeyChecking=no" 
-        ansible_ssh_private_key_file: ../aws_keys/ec2key.pem #clave privada que usaremos para conectar al servidor
+        ansible_ssh_private_key_file: aws_keys/ec2key.pem #clave privada que usaremos para conectar al servidor
       loop: '{{ ec2.instances }}'
 
 #validamos conectividad con las instancias creadas que pertenecen al grupo demogroup
