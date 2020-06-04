@@ -17,6 +17,14 @@
             to_port: 22
             cidr_ip: 0.0.0.0/0
 
+    - name: remove old key 
+      ec2_key:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        name: ec2key
+        state: absent
+
     - name: create a new ec2 keypair
       ec2_key: 
         aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
