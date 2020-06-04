@@ -1,0 +1,17 @@
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../aws_keys/keys.yml
+  tasks:
+    - name: Create new IAM role
+      iam_role:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        name: ansibleRole 
+        assume_role_policy_document: "{{ lookup('file','/home/renzo/policy.json') }}"
+        description: This role was created by Ansible!
+      register: iam_role
+
+    - debug:
+        var: iam_role
