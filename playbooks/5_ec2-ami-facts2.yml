@@ -1,0 +1,19 @@
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../aws_keys/keys.yml
+  tasks:
+    - name: Get AMI facts
+      ec2_ami_info:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        ec2_region: "{{ AWS_REGION }}"
+        owner: "{{ AWS_OWNER }}"
+      register: ami_facts
+  
+    - name: Output information
+      debug: 
+        msg: "{{ item.description }}"
+      loop_control:
+        label: "{{ item.image_id }}"
+      loop: "{{ ami_facts.images }}"
