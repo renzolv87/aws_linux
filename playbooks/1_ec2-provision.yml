@@ -3,6 +3,38 @@
   vars_files:
     - ../aws_keys/keys.yml
   tasks:
+    - name: Create new Security Group
+      ec2_group:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        name: test 
+        description: EC2 test Security Group
+        vpc_id: "{{ VPC_ID }}"
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+
+    - name: create a new ec2 keypair
+      ec2_key: 
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        name: ec2key 
+      register: keypair
+
+    - debug:
+        var: keypair
+
+    - name: write new private key to file locally
+      lineinfile: 
+        create: yes
+        path: /etc/ansible_aws/aws_keys/ec2key.pem
+        line: "{{ keypair.key.private_key }}"
+        mode: 0600
+
     - name: Provision instance
       ec2:
         aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
