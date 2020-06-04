@@ -1,0 +1,35 @@
+- hosts: node1
+  become: yes
+  remote_user: ec2-user
+  tasks:
+    - name: Update packages
+      yum:
+        name: "*"
+        state: latest
+    - name: Update image.txt
+      lineinfile:
+        path: /home/ec2-user/image.txt
+        line: "Image updated {{ ansible_date_time.date }}"
+    - name: Gather facts
+      ec2_metadata_facts:
+
+- hosts: localhost
+  tasks:
+    - name: Stop node1
+      local_action: ec2
+      args:
+        state: stopped
+        instance_id: "{{ hostvars['node1'].ansible_ec2_instance_id }}"
+        wait: yes
+    - name: Create AMI
+      local_action: ec2_ami
+      args:
+        state: present
+        instance_id: "{{ hostvars['node1'].ansible_ec2_instance_id }}"
+        name: UpdatedImage
+      register: ami_output
+    - name: Write AMI info to file
+      lineinfile:
+        create: yes
+        path: /home/renzo/ami.txt
+        line: "{{ ami_output.image_id }}"

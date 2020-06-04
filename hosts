@@ -1,3 +1,4 @@
 [nodes]
 localhost
-ec2 ansible_host=54.160.68.163
+ec2 ansible_host=54.172.24.73
+node1 ansible_host=34.203.249.75
