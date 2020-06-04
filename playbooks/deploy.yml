@@ -1,0 +1,34 @@
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../aws_keys/keys.yml
+  tasks:
+    - name: Get Subnet ID and AMI ID from existing server.
+      ec2_instance_info:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        filters:
+          tag:Name: Leo 
+      register: ec2_facts
+
+    - name: Stop Leo Instance
+      ec2:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: us-east-1
+        state: stopped
+        instance_tags:
+          Name: Leo 
+
+    - name: Deploy new EC2 Instance
+      ec2:
+       aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+       aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+       region: us-east-1
+       instance_type: t2.micro
+       image: "{{ ec2_facts.instances[0].image_id }}"
+       assign_public_ip: yes
+       vpc_subnet_id: "{{ ec2_facts.instances[0].subnet_id }}"
+       instance_tags:
+         Name: New

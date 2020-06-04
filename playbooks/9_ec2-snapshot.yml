@@ -1,0 +1,18 @@
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../aws_keys/keys.yml
+  tasks:
+    - name: Create new EBS Volume 
+      ec2_snapshot:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        zone: us-east-1a
+        volume_size: "1" #en GB
+        name: web_volume
+        device_name: /dev/xvdf
+      register: vol_info
+ 
+    - debug:
+        var: vol_info
