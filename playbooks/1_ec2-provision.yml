@@ -12,7 +12,7 @@
         key_name: ec2key
         image: ami-09d95fab7fff3776c #Amazon Linux 2 AMI 
         assign_public_ip: yes
-        vpc_subnet_id: subnet-063b7359ceccf5eae #Subnet dentro de VPC que ya existe
+        vpc_subnet_id: "{{ SUBNET }}" #Subnet dentro de VPC que ya existe
         group: test #Security Group que ya existe 
         wait: true
         exact_count: 1
