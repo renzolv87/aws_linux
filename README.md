@@ -59,7 +59,7 @@ hostnamectl set-hostname ec2_sles15
 ls -l /etc/HOSTNAME
 </pre>
 
-## Configurar fichero etc_hosts
+## Configurar fichero etc hosts
 </pre>
 ip a s
 
