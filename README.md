@@ -77,10 +77,10 @@ sestatus
 ++permissive - SELinux prints warnings instead of enforcing.
 
 +Persistente: /etc/selinux/config
-cp -p /etc/selinux/config /etc/selinux/config`date +%Y%m%d`
+cp -p /etc/selinux/config /etc/selinux/config.`date +%Y%m%d`
 sed 's/^SELINUX=.*$/SELINUX=disabled/g' /etc/selinux/config
 sed -i 's/^SELINUX=.*$/SELINUX=disabled/g' /etc/selinux/config
-diff /etc/selinux/config /etc/selinux/config`date +%Y%m%d`
+diff /etc/selinux/config /etc/selinux/config.`date +%Y%m%d`
 ++disabled - No SELinux policy is loaded.
 </pre>
 
@@ -198,13 +198,99 @@ rpm -qf /usr/share/man/man1/times.1.gz
 * Configurar filesystem
   * Los Instance Store Volumes no pueden ser detenidos, si el sistema falla los datos se pierden.
 
+* Mirar Availability Zone del EC2
+
 * Elastic Block Store
   * volumes
-  * /dev/sdb
-  * fdisk -l | grep ^Disk
   * lsblk -f
-
+  * fdisk -l | grep ^Disk | grep dev
+  * /dev/sdb   #aparece como /dev/xvdb
+  * fdisk -l | grep ^Disk | grep dev
+  * lsblk -f
+  
 * yum install lvm2 (+En el AMI de sles15 ya viene por defecto instalado)
+
+* Creamos una partición:
+  * https://www.youtube.com/watch?v=BtSQIxDPnLc
+<pre>
++ver tabla de particiones actualmente del disco:
+fdisk -l /dev/xvdb
+
++Crear partición (unidad lógica):
+fdisk /dev/xvdb
+p     #muestra tabla de particiones
+n     #nueva particion
+p     #tipo de partición -> primaria
+enter #default 1
+enter #default primer sector
+enter #default último sector
+p     #muestra tabla de particiones
+t     #tag del tipo de particion
+8e    #Linux LVM
+p     #muestra tabla de particion
+w     #escribe estos datos al disco
+
+ls -l /dev/xvdb1
+</pre>
+
+* Creamos pv (Physical Volume):
+<pre>
+pvs                   #listamos los physical volumes que tenemos en el sistema
+pvcreate /dev/xvdb1   #convertimos la partición a physical volume
+pvs                   #listamos los physical volumes que tenemos en el sistema
+</pre>
+
+* Creamos vg (Volume Group):
+  * Datos SO: vg00
+  * Datos Cliente: vg_data
+<pre>
++Necesitamos que exista el pv -> /dev/xvdb1
+
+vgs
+vgcreate vg_data /dev/xvdb1
+vgs
+</pre>
+
+* Creamos lv (Logical Volume)
+<pre>
+lvs
+lvcreate -n lv_test -L 3G vg_data
+lvs
+</pre>
+
+* Damos formato al lv:
+<pre>
+mkfs.ext4 mkfs.ext4 /dev/vg_data/lv_test    #mkfs. tab or mkfs -t ext4
+</pre>
+
+* Configuramos el fs a nivel de SO y para que monte autmoaticamente en el inicio del sistema:
+<pre>
+cp -p /etc/fstab /etc/fstab.`date +%Y%m%d`
+# grep test /etc/fstab
+/dev/vg_data/lv_test			  /test		          ext4    defaults        1 2
+mkdir /test
+mount /test
+df -Ph /test
+</pre>
+
+## Ampliar Filesystems
+* Añadimos disco.
+* Creamos partición.
+* Creamos pv.
+* Extendemos vg:
+<pre>
+vgs
+vgextend vg_data /dev/xvdc1
+vgs
+</pre>
+* Ampliamos lv y fs:
+<pre>
+df -Ph /test
+lvextend -L +1G -r /dev/vg_data/lv_test 
+df -Ph /test
+
+lvextend -l +100%free -r /dev/vg_data/lv_test 
+</pre>
 
 ## Swap
 * Tamaño:
@@ -226,12 +312,19 @@ AWS:
 
 * Configurar swap
 <pre>
++Creamos lv swap.
++Damos formato de swap al lv:
 mkswap /dev/vg_data/lv_swap
 
++Añadimos entrada en /etc/fstab
 cp -p /etc/fstab /etc/fstab.`date +%Y%m%d`
 /dev/vg_data/lv_swap                    swap                    swap      defaults        0 0
 
++Montamos la swap
 swapon -a
+
++validamos
+free -m
 </pre>
 
 ## Configurar las Xs
@@ -250,7 +343,6 @@ wget https://download.opensuse.org/repositories/openSUSE:/Leap:/15.1/standard/x8
 cat /etc/ssh/sshd_config| grep -i ^X11Forwarding
 X11Forwarding yes
 
-sudo su -
-touch .Xauthority
-xauth add $(xauth -f /home/ec2-user/.Xauthority list|tail -1)
+scp -i /home/renzo/aws_linux/aws_keys/formacion.pem .Xauthority ec2-user@ec2_rhel8:
+scp -i /home/renzo/aws_linux/aws_keys/formacion.pem .Xauthority ec2-user@ec2_sles15:
 </pre>
