@@ -1,15 +1,14 @@
 - [AWS Linux](#aws-linux)
   * [Instalamos Servidor en AWS](#instalamos-servidor-en-aws)
   * [Configurar Hostname](#configurar-hostname)
-  * [Configurar fichero /etc/hosts](#configurar-fichero--etc-hosts)
+  * [Configurar fichero /etc/hosts](#configurar-fichero-/etc/hosts)
   * [SELINUX](#selinux)
-  * [Configurar Timezone & NTP](#configurar-timezone---ntp)
+  * [Configurar Timezone & NTP](#configurar-timezone-&-ntp)
   * [Servicios](#servicios)
   * [Parámetros de kernel](#parámetros-de-kernel)
   * [Límites](#l-mites)
   * [Gestión de Paquetes](#gestión-de-paquetes)
   * [Filesystems](#filesystems)
-- [grep test /etc/fstab](#grep-test--etc-fstab)
   * [Ampliar Filesystems](#ampliar-filesystems)
   * [Swap](#swap)
   * [Configurar las Xs](#configurar-las-xs)
@@ -286,7 +285,7 @@ mkfs.ext4 mkfs.ext4 /dev/vg_data/lv_test    #mkfs. tab or mkfs -t ext4
 * Configuramos el fs a nivel de SO y para que monte autmoaticamente en el inicio del sistema:
 <pre>
 cp -p /etc/fstab /etc/fstab.`date +%Y%m%d`
-# grep test /etc/fstab
+#grep test /etc/fstab
 /dev/vg_data/lv_test			  /test		          ext4    defaults        1 2
 mkdir /test
 mount /test
