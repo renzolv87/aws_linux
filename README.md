@@ -159,10 +159,47 @@ systemctl enable chronyd
 ## Parámetros de kernel
 * Configurar parámetros de kernel
 <pre>
-/etc/sysctl.conf
+cp -p /etc/sysctl.conf /etc/sysctl.conf.`date +%Y%m%d`
 
 sysctl -p
 sysctl -a
+
+-------------------------------------------------------------------------------------------------------------------------
++RHEL (SAP ASE)
+net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+net.core.rmem_default=16777216
+net.core.wmem_default=16777216
+net.core.optmem_max=16777216
+net.core.netdev_max_backlog=300000
+net.ipv4.tcp_rmem='65536 16777216 16777216'
+net.ipv4.tcp_wmem='65536 16777216 16777216'
+net.ipv4.tcp_no_metrics_save=1
+net.ipv4.tcp_moderate_rcvbuf=1
+net.ipv4.tcp_window_scaling=1
+net.ipv4.tcp_timestamps=1
+net.ipv4.tcp_sack=1
+kernel.sysrq=0
+net.ipv4.tcp_syncookies=1
+
+-------------------------------------------------------------------------------------------------------------------------
++SLES
+vm.dirty_ratio=2
+vm.dirty_background_ratio=1
+net.core.somaxconn=4096
+net.ipv4.tcp_max_syn_backlog=8192
+net.ipv4.tcp_tw_reuse=1
+net.ipv4.tcp_tw_recycle=1
+net.ipv4.tcp_syn_retries=8
+  
+-------------------------------------------------------------------------------------------------------------------------
+</pre>
+
+##Usuarios y grupos
+<pre>
+groupadd -g XXXX sapsys
+
+useradd -m -d /home/saptest -g sapsys -u XXX saptest
 </pre>
 
 ## Límites
@@ -170,6 +207,17 @@ sysctl -a
 /etc/security/limits.conf
 
 /etc/security/limits.d/
+
+#SAP ASE
+@sapsys soft nofile 65536
+@sapsys hard nofile 65536
+@sdba soft nofile 65536
+@sdba hard nofile 65536
+@dba soft nofile 65536
+@dba hard nofile 65536
+
+su - saptest
+ulimit -a                   #validar limites aplicados
 </pre>
 
 ## Gestión de Paquetes
