@@ -1,7 +1,7 @@
 - [AWS Linux](#aws-linux)
   * [Instalamos Servidor en AWS](#instalamos-servidor-en-aws)
   * [Configurar Hostname](#configurar-hostname)
-  * [Configurar fichero /etc/hosts](#configurar-fichero-\\/etc\\/hosts)
+  * [Configurar fichero /etc/hosts](#configurar-fichero-\\\/etc\\\/hosts)
   * [SELINUX](#selinux)
   * [Configurar Timezone & NTP](#configurar-timezone-\\&-ntp)
   * [Servicios](#servicios)
