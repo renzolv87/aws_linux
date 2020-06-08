@@ -14,9 +14,11 @@
         name: "{{ NAME }}_rhel8" 
         device_name: "{{ device_name }}" 
       register: vol_info_rhel8
- 
+      tags: create 
+
     - debug:
         var: vol_info_rhel8
+      tags: create 
 
     - name: Attach Volume to "{{ NAME }}_rhel8"
       ec2_vol:
@@ -25,7 +27,9 @@
         region: "{{ AWS_REGION }}"
         instance: "{{ ec2_rhel8_id }}"
         id: "{{ vol_info_rhel8.volume.id }}"
+        device_name: "{{ device_name }}"
         delete_on_termination: yes
+      tags: attach
 
     - name: Create new EBS Volume to "{{ NAME }}_sles15"
       ec2_vol:
@@ -37,9 +41,11 @@
         name: "{{ NAME }}_sles15" 
         device_name: "{{ device_name }}"
       register: vol_info_sles15
+      tags: create 
  
     - debug:
         var: vol_info_sles15
+      tags: create 
     
     - name: Attach Volume to "{{ NAME }}_sles15"
       ec2_vol:
@@ -48,5 +54,7 @@
         region: "{{ AWS_REGION }}"
         instance: "{{ ec2_sles15_id }}"
         id: "{{ vol_info_sles15.volume.id }}"
+        device_name: "{{ device_name }}"
         delete_on_termination: yes
+      tags: attach
 
