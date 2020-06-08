@@ -235,7 +235,7 @@ w     #escribe estos datos al disco
 ls -l /dev/xvdb1
 </pre>
 
-![](images/lvm_chart.png)
+![](images/lvm_chart.jpg)
 
 * Creamos pv (Physical Volume):  
 <pre>
