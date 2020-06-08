@@ -66,15 +66,12 @@ ip a s
 cp -p /etc/hosts /etc/hosts.`date +%Y%m%d`
 
 diff /etc/hosts /etc/hosts.`date +%Y%m%d`
-4d3
-< 10.10.130.90 ec2_rhel8.pepe.com ec2_rhel8
+10.10.130.90 ec2_rhel8.pepe.com ec2_rhel8
 
 cp -p /etc/hosts /etc/hosts.`date +%Y%m%d`
 
 diff /etc/hosts /etc/hosts.`date +%Y%m%d`
-27,28d26
-< 
-< 10.10.14.176	ec2_sles15.pepe.com ec2_sles15
+10.10.14.176	ec2_sles15.pepe.com ec2_sles15
 
 hostname
 hostname -f
