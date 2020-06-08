@@ -6,6 +6,7 @@
   * [Configurar Timezone & NTP](#configurar-timezone-y-ntp)
   * [Servicios](#servicios)
   * [Parámetros de kernel](#parámetros-de-kernel)
+  * [Usuarios y Grupos](#usuarios-y-grupos)
   * [Límites](#límites)
   * [Gestión de Paquetes](#gestión-de-paquetes)
   * [Filesystems](#filesystems)
@@ -155,6 +156,7 @@ systemctl is-enabled chronyd
 systemctl disable chronyd
 systemctl enable chronyd
 </pre>
+
 ## Parámetros de kernel
 * Configurar parámetros de kernel
 <pre>
@@ -197,7 +199,7 @@ sysctl -a | egrep -w "vm.dirty_ratio|vm.dirty_background_ratio|net.core.somaxcon
 -------------------------------------------------------------------------------------------------------------------------
 </pre>
 
-##Usuarios y grupos
+## Usuarios y Grupos
 <pre>
 groupadd -g XXXX sapsys
 
