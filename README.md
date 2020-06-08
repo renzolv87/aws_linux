@@ -64,11 +64,13 @@ ls -l /etc/HOSTNAME
 ip a s
 
 cp -p /etc/hosts /etc/hosts.`date +%Y%m%d`
+
 diff /etc/hosts /etc/hosts.`date +%Y%m%d`
 4d3
 < 10.10.130.90 ec2_rhel8.pepe.com ec2_rhel8
 
 cp -p /etc/hosts /etc/hosts.`date +%Y%m%d`
+
 diff /etc/hosts /etc/hosts.`date +%Y%m%d`
 27,28d26
 < 
