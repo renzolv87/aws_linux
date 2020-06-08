@@ -240,6 +240,7 @@ yum clean all                            dnf clean all
 yum repolist                             dnf repolist
 cd /etc/yum.reposd                       # <--- ubicacion de repositorios configurados en el servidor
 yum list                                 dnf list
+yum list --installed                     dnf list --installed
 yum search                               dnf search 
 yum provides '*/ls'                      dnf provides */ls
 yum info                                 dnf info vim
@@ -255,6 +256,8 @@ zypper install telnet unzip zip wget
 zypper install xorg-x11-xauth
 
 zypper ls
+zypper packages 
+zypper packages --installed-only
 zypper se
 zypper search --provides '*/ls'
 
@@ -439,4 +442,5 @@ scp -i /home/renzo/aws_linux/aws_keys/formacion.pem .Xauthority ec2-user@ec2_sle
 Abro SW de Xs
 ssh -X renzo@ansible
 ssh -X -i /home/renzo/aws_linux/aws_keys/formacion.pem ec2-user@ec2_rhel8 
+ssh -X -i /home/renzo/aws_linux/aws_keys/formacion.pem ec2-user@ec2_sles15
 </pre>
