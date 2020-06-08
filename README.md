@@ -186,10 +186,10 @@ zypper search --provides '*/ls'
 
 -------------------------------------------------------------------------------------------------------------
 +RPM:
-rpm -qa
-rpm -qi
-rpm -ql bash-4.4.19-10.el8.x86_64
-rpm -qf /usr/share/man/man1/times.1.gz
+rpm -qa                                   #listar todos los paquetes instalados
+rpm -qi                                   #obtener información de un paquete
+rpm -ql bash-4.4.19-10.el8.x86_64         #mostar los ficheros que contiene un paquete
+rpm -qf /usr/share/man/man1/times.1.gz    #a partir de un fichero obtener el paquete de donde proviene
 
 -------------------------------------------------------------------------------------------------------------
 </pre>
@@ -210,8 +210,10 @@ rpm -qf /usr/share/man/man1/times.1.gz
   
 * yum install lvm2 (+En el AMI de sles15 ya viene por defecto instalado)
 
+  * Excepto /boot que no ha de estar en LVM. 
+  * Flexibilidad ampliar y reducir fs.
+
 * Creamos una partición:
-  * https://www.youtube.com/watch?v=BtSQIxDPnLc
 <pre>
 +ver tabla de particiones actualmente del disco:
 fdisk -l /dev/xvdb
@@ -233,7 +235,9 @@ w     #escribe estos datos al disco
 ls -l /dev/xvdb1
 </pre>
 
-* Creamos pv (Physical Volume):
+![](images/lvm_chart.png)
+
+* Creamos pv (Physical Volume):  
 <pre>
 pvs                   #listamos los physical volumes que tenemos en el sistema
 pvcreate /dev/xvdb1   #convertimos la partición a physical volume
@@ -332,10 +336,18 @@ free -m
 <pre>
 +RHEL:
 yum install xorg-x11-xauth
+cd /tmp
+#Siempre instalar de repositorios oficiales, este es esolo un ejemplo y no debe instalarse sw fuera de los repos oficiales:
 wget https://rpmfind.net/linux/centos/8.1.1911/PowerTools/x86_64/os/Packages/xorg-x11-apps-7.7-21.el8.x86_64.rpm
+yum install xorg-x11-apps-7.7-21.el8.x86_64.rpm 
+
 +SLES:
 zypper install xorg-x11-xauth
+cd /tmp
+#Siempre instalar de repositorios oficiales, este es esolo un ejemplo y no debe instalarse sw fuera de los repos oficiales:
 wget https://download.opensuse.org/repositories/openSUSE:/Leap:/15.1/standard/x86_64/xclock-1.0.7-lp151.2.3.x86_64.rpm
+zypper install xclock-1.0.7-lp151.2.3.x86_64.rpm
+ignore key
 </pre>
 
 * Tener el x11 forwarding habiltado:
@@ -343,6 +355,11 @@ wget https://download.opensuse.org/repositories/openSUSE:/Leap:/15.1/standard/x8
 cat /etc/ssh/sshd_config| grep -i ^X11Forwarding
 X11Forwarding yes
 
+cd
 scp -i /home/renzo/aws_linux/aws_keys/formacion.pem .Xauthority ec2-user@ec2_rhel8:
 scp -i /home/renzo/aws_linux/aws_keys/formacion.pem .Xauthority ec2-user@ec2_sles15:
+
+Abro SW de Xs
+ssh -X renzo@ansible
+ssh -X -i /home/renzo/aws_linux/aws_keys/formacion.pem ec2-user@ec2_rhel8 
 </pre>
