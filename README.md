@@ -277,7 +277,8 @@ lvcreate -n lv_test -L 3G vg_data
 lvs
 </pre>
 
-* Damos formato al lv:
+* Damos formato al lv: 
+  * http://www.veprof.com/linux-file-systems-and-their-differences.html
 <pre>
 mkfs.ext4 mkfs.ext4 /dev/vg_data/lv_test    #mkfs. tab or mkfs -t ext4
 </pre>
