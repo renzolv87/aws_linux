@@ -166,32 +166,35 @@ sysctl -a
 
 -------------------------------------------------------------------------------------------------------------------------
 +RHEL (SAP ASE)
-net.core.rmem_max=16777216
-net.core.wmem_max=16777216
-net.core.rmem_default=16777216
-net.core.wmem_default=16777216
-net.core.optmem_max=16777216
-net.core.netdev_max_backlog=300000
-net.ipv4.tcp_rmem='65536 16777216 16777216'
-net.ipv4.tcp_wmem='65536 16777216 16777216'
-net.ipv4.tcp_no_metrics_save=1
-net.ipv4.tcp_moderate_rcvbuf=1
-net.ipv4.tcp_window_scaling=1
-net.ipv4.tcp_timestamps=1
-net.ipv4.tcp_sack=1
-kernel.sysrq=0
-net.ipv4.tcp_syncookies=1
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.core.rmem_default = 16777216
+net.core.wmem_default = 16777216
+net.core.optmem_max = 16777216
+net.core.netdev_max_backlog = 300000
+net.ipv4.tcp_rmem = 65536 16777216 16777216
+net.ipv4.tcp_wmem = 65536 16777216 16777216
+net.ipv4.tcp_no_metrics_save = 1
+net.ipv4.tcp_moderate_rcvbuf = 1
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_sack = 1
+kernel.sysrq = 0
+net.ipv4.tcp_syncookies = 1
+
+sysctl -a | egrep -w "net.core.rmem_max|net.core.wmem_max|net.core.rmem_default|net.core.wmem_default|net.core.optmem_max|net.core.netdev_max_backlog|net.ipv4.tcp_rmem|net.ipv4.tcp_wmem|net.ipv4.tcp_no_metrics_save|net.ipv4.tcp_moderate_rcvbuf|net.ipv4.tcp_window_scaling|net.ipv4.tcp_timestamps|net.ipv4.tcp_sack|kernel.sysrq|net.ipv4.tcp_syncookies"
 
 -------------------------------------------------------------------------------------------------------------------------
 +SLES
-vm.dirty_ratio=2
-vm.dirty_background_ratio=1
-net.core.somaxconn=4096
-net.ipv4.tcp_max_syn_backlog=8192
-net.ipv4.tcp_tw_reuse=1
-net.ipv4.tcp_tw_recycle=1
-net.ipv4.tcp_syn_retries=8
-  
+vm.dirty_ratio = 2
+vm.dirty_background_ratio = 1
+net.core.somaxconn = 4096
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_syn_retries = 8
+
+sysctl -a | egrep -w "vm.dirty_ratio|vm.dirty_background_ratio|net.core.somaxconn|net.ipv4.tcp_max_syn_backlog|net.ipv4.tcp_tw_reuse|net.ipv4.tcp_syn_retries"
+
 -------------------------------------------------------------------------------------------------------------------------
 </pre>
 
@@ -203,10 +206,17 @@ useradd -m -d /home/saptest -g sapsys -u XXX saptest
 </pre>
 
 ## Límites
+* https://www.thegeekdiary.com/understanding-etc-security-limits-conf-file-to-set-ulimit/
 <pre>
+ su - saptest
+ ulimit -a
+ ulimit -a | grep "open files"
+ 
 /etc/security/limits.conf
 
-/etc/security/limits.d/
+vi /etc/security/limits.d/sap.conf
+@sapsys soft nofile 65536
+@sapsys hard nofile 65536
 
 #SAP ASE
 @sapsys soft nofile 65536
@@ -218,6 +228,7 @@ useradd -m -d /home/saptest -g sapsys -u XXX saptest
 
 su - saptest
 ulimit -a                   #validar limites aplicados
+ulimit -a | grep "open files"
 </pre>
 
 ## Gestión de Paquetes
