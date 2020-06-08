@@ -2,16 +2,17 @@
   gather_facts: no
   vars_files:
     - ../aws_keys/keys.yml
+    - ../aws_keys/general_vars.yml
   tasks:
     - name: Create new EBS Volume to "{{ NAME }}_rhel8"
       ec2_vol:
         aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
         aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
         region: "{{ AWS_REGION }}"
-        zone: us-east-1a
+        zone: "{{ ec2_rhel8_zone }}" 
         volume_size: "10" #en GB
         name: "{{ NAME }}_rhel8" 
-        device_name: /dev/xvdf
+        device_name: "{{ device_name }}" 
       register: vol_info
  
     - debug:
@@ -22,10 +23,10 @@
         aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
         aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
         region: "{{ AWS_REGION }}"
-        zone: us-east-1a
+        zone: "{{ ec2_sles15_zone }}"
         volume_size: "10" #en GB
         name: "{{ NAME }}_sles15" 
-        device_name: /dev/xvdf
+        device_name: "{{ device_name }}"
       register: vol_info
  
     - debug:

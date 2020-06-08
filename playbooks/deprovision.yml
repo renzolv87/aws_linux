@@ -2,7 +2,7 @@
   gather_facts: no
   vars_files:
     - ../aws_keys/keys.yml
-    - ../aws_keys/network.yml
+    - ../aws_keys/general_vars.yml
   tasks:
     - name: " Get info {{ NAME }} instances"
       ec2_instance_info:

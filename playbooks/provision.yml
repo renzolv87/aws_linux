@@ -186,10 +186,10 @@
           name:
             - ec2_sles15 
 
-    - name: Save network vars
+    - name: Save general vars
       lineinfile:
         create: yes
-        path: aws_linux/aws_keys/network.yml
+        path: aws_linux/aws_keys/general_vars.yml
         regexp: "^{{ item['variable_name'] }}:"
         line: "{{ item['variable_name'] }}: {{ item['variable_value'] }}"
         mode: 0600
