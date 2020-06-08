@@ -206,4 +206,8 @@
           variable_value: "{{ igw.gateway_id }}"
         - variable_name: "group_id"
           variable_value: "{{ nsg.group_id }}"
+        - variable_name: "ec2_rhel8_zone"
+          variable_value: "{{ ec2_rhel8.tagged_instances[0].placement }}"
+        - variable_name: "ec2_sles15_zone"
+          variable_value: "{{ ec2_sles15.tagged_instances[0].placement }}"
 
