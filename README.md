@@ -229,6 +229,8 @@ rpm -qf /usr/share/man/man1/times.1.gz    #a partir de un fichero obtener el paq
   * Flexibilidad ampliar y reducir fs.
 
 * Creamos una partición:
+  * https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/logical_volume_manager_administration/physvol_admin
+  * https://www.tldp.org/HOWTO/LVM-HOWTO/initdisks.html
 <pre>
 +ver tabla de particiones actualmente del disco:
 fdisk -l /dev/xvdb
