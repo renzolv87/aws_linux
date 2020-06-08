@@ -13,10 +13,19 @@
         volume_size: "10" #en GB
         name: "{{ NAME }}_rhel8" 
         device_name: "{{ device_name }}" 
-      register: vol_info
+      register: vol_info_rhel8
  
     - debug:
-        var: vol_info
+        var: vol_info_rhel8
+
+    - name: Attach Volume to "{{ NAME }}_rhel8"
+      ec2_vol:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        instance: "{{ ec2_rhel8_id }}"
+        id: "{{ vol_info_rhel8.volume.id }}"
+        delete_on_termination: yes
 
     - name: Create new EBS Volume to "{{ NAME }}_sles15"
       ec2_vol:
@@ -27,8 +36,17 @@
         volume_size: "10" #en GB
         name: "{{ NAME }}_sles15" 
         device_name: "{{ device_name }}"
-      register: vol_info
+      register: vol_info_sles15
  
     - debug:
-        var: vol_info
+        var: vol_info_sles15
+    
+    - name: Attach Volume to "{{ NAME }}_sles15"
+      ec2_vol:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        instance: "{{ ec2_sles15_id }}"
+        id: "{{ vol_info_sles15.volume.id }}"
+        delete_on_termination: yes
 
