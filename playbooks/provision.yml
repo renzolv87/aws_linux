@@ -1,0 +1,209 @@
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../aws_keys/keys.yml
+  tasks:
+    - name: Create VPC
+      ec2_vpc_net:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        name: "{{ NAME }}"
+        cidr_block: "{{ VPC_CIDR }}"
+        tags:
+          Name: "{{ NAME }}"
+          client: "{{ NAME }}"
+      register: vpc
+    
+    #- debug:
+    #    var: vpc
+
+    - name: Get VPC facts 
+      ec2_vpc_net_info:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+      register: vpc_facts
+
+    #- debug:
+    #    var: vpc_facts
+
+    - name: Create Subnet 
+      ec2_vpc_subnet:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        state: present
+        vpc_id: "{{ vpc.vpc.id }}"
+        cidr: "{{ SUBNET_CIDR }}"
+        tags:
+          Name: "{{ NAME }}" 
+      register: subnet
+
+    #- debug:
+    #    var: subnet 
+    
+    - name: Get Subnet facts 
+      ec2_vpc_subnet_info:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        filters:
+          "tag:Name": "{{ NAME }}" 
+      register: subnet_facts
+ 
+    #- debug:
+    #    var: subnet_facts
+
+    - name: Create Internet Gateway 
+      ec2_vpc_igw:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        vpc_id: "{{ vpc.vpc.id }}"
+        state: present
+        tags:
+          Name: "{{ NAME }}" 
+      register: igw
+    
+    - name: Get Internet Gateway facts 
+      ec2_vpc_igw_info:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        filters:
+          "tag:Name": "{{ NAME }}"
+      register: igw_facts
+ 
+    #- debug:
+    #    var: igw_facts
+
+    - name: Set up public subnet route table
+      ec2_vpc_route_table:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        vpc_id: "{{ vpc.vpc.id }}"
+        tags:
+          Name: "{{ NAME }}"
+        subnets:
+          - "{{ subnet.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+      register: public_route_table
+
+
+    - name: Create new Security Group
+      ec2_group:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        name: "{{ NAME }}" 
+        description: "{{ NAME }} Security Group"
+        vpc_id: "{{ vpc.vpc.id }}"
+        tags:
+          Name: "{{ NAME }}"
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+      register: nsg
+  
+    #- debug:
+    #    var: nsg
+
+    - name: create a new ec2 keypair using existing key
+      ec2_key:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        ec2_region: "{{ AWS_REGION }}"
+        name: "{{ NAME }}" 
+        key_material: "{{ lookup('file', '{{ EC2_PUBLIC_KEY }}') }}"
+      register: keypair
+
+    #- debug:
+    #    var: keypair
+
+    - name: Provision instance RHEL8
+      ec2:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        instance_type: t2.micro
+        key_name: "{{ NAME }}" 
+        image: ami-098f16afa9edf40be #RHEL8 - in Region us-east-1
+        assign_public_ip: yes
+        vpc_subnet_id: "{{ subnet.subnet.id }}"
+        group: "{{ NAME }}" 
+        wait: true
+        exact_count: 1
+        count_tag:
+          Name: "{{ NAME }}_rhel8"
+        instance_tags: 
+          Name: "{{ NAME }}_rhel8"
+      register: ec2_rhel8
+
+    - debug:
+        #var: ec2_rhel8
+        msg: "ec2_rhel8 Public IP: {{ ec2_rhel8.tagged_instances[0].public_ip }}"
+
+    - name: Provision instance SLES15 
+      ec2:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        instance_type: t2.micro
+        key_name: "{{ NAME }}"
+        image: ami-0068cd63259e9f24c #SLES15 in Region us-east-1
+        assign_public_ip: yes
+        vpc_subnet_id: "{{ subnet.subnet.id }}"
+        group: "{{ NAME }}" 
+        wait: true
+        exact_count: 1
+        count_tag:
+          Name: "{{ NAME }}_sles15"
+        instance_tags: 
+          Name: "{{ NAME }}_sles15"
+      register: ec2_sles15
+
+    - debug:
+        #var: ec2_sles15
+        msg: "ec2_sles15 Public IP: {{ ec2_sles15.tagged_instances[0].public_ip }}"
+
+    - name: add a list of hosts to /etc/hosts
+      become: yes
+      lineinfile:
+        dest: /etc/hosts
+        regexp: ".*{{ item['name'] |join(' ') }}$"
+        line: "{{ item['ip'] }}\t{{ item['name']|join(' ') }}"        
+      with_items:
+        - ip: "{{ ec2_rhel8.tagged_instances[0].public_ip }}" 
+          name:
+            - ec2_rhel8
+        - ip: "{{ ec2_sles15.tagged_instances[0].public_ip }}" 
+          name:
+            - ec2_sles15 
+
+    - name: Save network vars
+      lineinfile:
+        create: yes
+        path: aws_linux/aws_keys/network.yml
+        regexp: "^{{ item['variable_name'] }}:"
+        line: "{{ item['variable_name'] }}: {{ item['variable_value'] }}"
+        mode: 0600
+      with_items:
+        - variable_name: "vpc_id"
+          variable_value: "{{ vpc.vpc.id }}"
+        - variable_name: "vpc_cidr_block"
+          variable_value: "{{ vpc.vpc.cidr_block}}"
+        - variable_name: "subnet_id"
+          variable_value: "{{ subnet.subnet.id }}"
+        - variable_name: "subnet_cidr_block"
+          variable_value: "{{ subnet.subnet.cidr_block }}"
+        - variable_name: "igw_id"
+          variable_value: "{{ igw.gateway_id }}"
+        - variable_name: "group_id"
+          variable_value: "{{ nsg.group_id }}"
+

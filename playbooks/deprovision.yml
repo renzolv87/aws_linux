@@ -1,0 +1,88 @@
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ../aws_keys/keys.yml
+    - ../aws_keys/network.yml
+  tasks:
+    - name: " Get info {{ NAME }} instances"
+      ec2_instance_info:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        filters:
+          tag:Name: "{{ NAME }}*"
+      register: ec2_facts
+
+#    - debug:
+#        var: ec2_facts
+
+    - name: Terminate ec2 instances
+      ec2:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        state: absent
+        instance_id: "{{ item.instance_id }}"
+      register: ec2
+      with_items: 
+        - "{{ ec2_facts.instances }}"
+
+#   - debug:
+#       var: ec2
+
+    - name: Delete ec2 keypair 
+      ec2_key:
+         aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+         aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+         ec2_region: "{{ AWS_REGION }}"
+         name: "{{ NAME }}" 
+         state: absent
+ 
+    - name: Delete Security Group
+      ec2_group:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        group_id: "{{ group_id }}" 
+        state: absent
+    
+    - name: Delete public subnet route table
+      ec2_vpc_route_table:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        vpc_id: "{{ vpc_id }}"
+        tags:
+          Name: "{{ NAME }}" 
+        subnets: 
+          - "{{ subnet_id }}"
+        purge_routes: yes
+        purge_subnets: yes
+        state: absent
+
+    - name: Delete Internet Gateway
+      ec2_vpc_igw:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        vpc_id: "{{ vpc_id }}"
+        state: absent
+
+    - name: Delete Subnet 
+      ec2_vpc_subnet:
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        state: absent
+        vpc_id: "{{ vpc_id }}"
+        cidr: "{{ subnet_cidr_block }}"
+
+    - name: Delete VPC
+      ec2_vpc_net:   
+        name: "{{ NAME }}"
+        aws_access_key: "{{ AWS_ACCESS_KEY_ID }}"
+        aws_secret_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+        region: "{{ AWS_REGION }}"
+        cidr_block: "{{ vpc_cidr_block }}"
+        state: absent  
+        purge_cidrs: yes  
