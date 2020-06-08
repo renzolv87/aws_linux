@@ -1,9 +1,9 @@
 - [AWS Linux](#aws-linux)
   * [Instalamos Servidor en AWS](#instalamos-servidor-en-aws)
   * [Configurar Hostname](#configurar-hostname)
-  * [Configurar fichero /etc/hosts](#configurar-fichero-\\\/etc\\\/hosts)
+  * [Configurar fichero /etc/hosts](#configurar-fichero-etc-hosts)
   * [SELINUX](#selinux)
-  * [Configurar Timezone & NTP](#configurar-timezone-\\&-ntp)
+  * [Configurar Timezone & NTP](#configurar-timezone-y-ntp)
   * [Servicios](#servicios)
   * [Parámetros de kernel](#parámetros-de-kernel)
   * [Límites](#límites)
@@ -59,7 +59,7 @@ hostnamectl set-hostname ec2_sles15
 ls -l /etc/HOSTNAME
 </pre>
 
-## Configurar fichero /etc/hosts
+## Configurar fichero etc_hosts
 </pre>
 ip a s
 
@@ -99,7 +99,7 @@ diff /etc/selinux/config /etc/selinux/config.`date +%Y%m%d`
 ++disabled - No SELinux policy is loaded.
 </pre>
 
-## Configurar Timezone & NTP
+## Configurar Timezone y NTP
 * Info:
  * https://docs.aws.amazon.com/es_es/AWSEC2/latest/UserGuide/set-time.html
 
