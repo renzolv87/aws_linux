@@ -204,6 +204,9 @@ sysctl -a | egrep -w "vm.dirty_ratio|vm.dirty_background_ratio|net.core.somaxcon
 groupadd -g XXXX sapsys
 
 useradd -m -d /home/saptest -g sapsys -u XXX saptest
+
++Añadir grupos secundarios:
+usermod -aG chrony saptest
 </pre>
 
 ## Límites
