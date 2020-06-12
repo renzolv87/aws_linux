@@ -13,7 +13,8 @@
   * [Ampliar Filesystems](#ampliar-filesystems)
   * [Swap](#swap)
   * [Configurar las Xs](#configurar-las-xs)
-
+  * [Crontab](#crontab)
+  
 # AWS Linux
 
 ## Instalamos Servidor en AWS
@@ -451,4 +452,49 @@ Abro SW de Xs
 ssh -X renzo@ansible
 ssh -X -i /home/renzo/aws_linux/aws_keys/formacion.pem ec2-user@ec2_rhel8 
 ssh -X -i /home/renzo/aws_linux/aws_keys/formacion.pem ec2-user@ec2_sles15
+</pre>
+
+# Crontab
+![](images/crontab.png)
+
+* Cada usuario tiene sus propios crontabs. Para verlos:
+<pre>
+crontab -l
+</pre>
+
+* Para crear una nueva entrada:
+<pre>
+crontab -e
+</pre>
+
+* Importante!!! Redirigir la salida de error y standar a /dev/null:
+<pre>
+#crontab -l
+30 10 * * * /bin/ls /tmp 1>/dev/null 2>/dev/null
+
+esto es lo mismo que:
+#crontab -l
+30 10 * * * /bin/ls /tmp 1>/dev/null 2>/dev/null
+</pre>
+
+* Ubicación de los ficheros de crontab de cada usuario:
+<pre>
++RHEL 8
+/var/spool/cron/   
+
++SLES 15
+/var/spool/cron/tabs/
+</pre>
+
+* Fichero donde se configura qué usuario esta permitido para utilizar crontab:
+<pre>
+/etc/cron.allow
+
+#cat /etc/cron.allow 
+root
+</pre>
+
+* Fichero donde se indica los usuarios denegados a utilizar el cron:
+<pre>
+/etc/cron.deny
 </pre>
