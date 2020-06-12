@@ -474,7 +474,7 @@ crontab -e
 
 esto es lo mismo que:
 #crontab -l
-30 10 * * * /bin/ls /tmp 1>/dev/null 2>/dev/null
+30 10 * * * /bin/ls /tmp >/dev/null 2>&1
 </pre>
 
 * Ubicación de los ficheros de crontab de cada usuario:
