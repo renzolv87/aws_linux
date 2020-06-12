@@ -252,7 +252,7 @@ yum info                                 dnf info vim
 yum install telnet unzip zip wget        dnf install telnet unzip zip wget 
 yum install xorg-x11-xauth               dnf install xorg-x11-xauth 
 
-yum remove XXXX                          dnf remove XXXX
+yum erase XXXX                          dnf erase XXXX
 
 -------------------------------------------------------------------------------------------------------------
 +SLES:
@@ -264,6 +264,8 @@ zypper packages
 zypper packages --installed-only
 zypper se
 zypper search --provides '*/ls'
+
+zypper rm XXXX 
 
 -------------------------------------------------------------------------------------------------------------
 +RPM:
@@ -402,11 +404,11 @@ AWS:
 <pre>
 +Creamos lv swap.
 +Damos formato de swap al lv:
-mkswap /dev/vg_data/lv_swap
+mkswap /dev/vg_swap/lv_swap
 
 +Añadimos entrada en /etc/fstab
 cp -p /etc/fstab /etc/fstab.`date +%Y%m%d`
-/dev/vg_data/lv_swap                    swap                    swap      defaults        0 0
+/dev/vg_swap/lv_swap                    swap                    swap      defaults        0 0
 
 +Montamos la swap
 swapon -a
@@ -424,6 +426,7 @@ cd /tmp
 #Siempre instalar de repositorios oficiales, este es esolo un ejemplo y no debe instalarse sw fuera de los repos oficiales:
 wget https://rpmfind.net/linux/centos/8.1.1911/PowerTools/x86_64/os/Packages/xorg-x11-apps-7.7-21.el8.x86_64.rpm
 yum install xorg-x11-apps-7.7-21.el8.x86_64.rpm 
+yum erase xorg-x11-apps-7.7-21.el8.x86_64
 
 +SLES:
 zypper install xorg-x11-xauth
@@ -432,6 +435,7 @@ cd /tmp
 wget https://download.opensuse.org/repositories/openSUSE:/Leap:/15.1/standard/x86_64/xclock-1.0.7-lp151.2.3.x86_64.rpm
 zypper install xclock-1.0.7-lp151.2.3.x86_64.rpm
 ignore key
+zypper rm xclock-1.0.7-lp151.2.3.x86_64
 </pre>
 
 * Tener el x11 forwarding habiltado:
