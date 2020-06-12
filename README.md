@@ -457,6 +457,8 @@ ssh -X -i /home/renzo/aws_linux/aws_keys/formacion.pem ec2-user@ec2_sles15
 # Crontab
 ![](images/crontab.png)
 
+* https://opensource.com/article/17/11/how-use-cron-linux
+
 * Cada usuario tiene sus propios crontabs. Para verlos:
 <pre>
 crontab -l
